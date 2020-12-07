@@ -7,9 +7,6 @@ sbin (n, s) =
     'F' -> sbin (n, tail s)
     'L' -> sbin (n, tail s)
 
-parseInt :: String -> Integer
-parseInt (s) = let (a, _) = sbin(0, s) in a
-
 seat :: String -> Integer
 seat (s) = let ((a, _), (b, _)) = (sbin(0, take 7 s), sbin(0, drop 7 s)) in a * 8 + b
 
