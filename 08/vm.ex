@@ -17,12 +17,45 @@ defmodule VM do
       "jmp" -> {acc, pos + arg}
     end
 
-    case Enum.any?(path, fn(p) -> p == next end) do
-      true -> acc
-      false -> run(next, acc, path ++ [pos], program)
+    if next == length(program) do
+      {:ok, acc}
+    else
+      case Enum.any?(path, fn(p) -> p == next end) do
+        true -> {:halt, acc}
+        false -> run(next, acc, path ++ [pos], program)
+      end
     end
+  end
+
+  # flip the index and run the program
+  def check(idx, inst, program) do
+    run(0, 0, [], List.replace_at(program, idx, inst))
+  end
+
+  # find a program that won't halt
+  def debug(program) do
+    Enum.find_value(Enum.with_index(program), fn(inidx) ->
+      {{code, arg}, i} = inidx
+      {result, acc} = case code do
+        "nop" -> check(i, {"jmp", arg}, program)
+        "jmp" -> check(i, {"nop", 0}, program)
+        "acc" -> {:halt, 0}
+      end
+
+      case result do
+        :ok -> {result, acc}
+        _ -> false
+      end
+    end
+    )
   end
 
 end
 
-IO.puts(VM.run(0, 0, [], VM.readProgram("sample")))
+# Part one
+{_, acc} = VM.run(0, 0, [], VM.readProgram("input"))
+IO.puts(acc)
+
+# Part two
+{:ok, acc} = VM.debug(VM.readProgram("input"))
+IO.puts(acc)
