@@ -1,0 +1,25 @@
+0: a b c   e f g
+1:     c     f
+2: a   c d e   g
+3: a   c d   f g
+4:   b c d   f
+5: a b   d   f g
+6: a b   d e f g
+7: a   c     f
+8: a b c d e f g
+9: a b c d   f g
+
+uniq segments: 1 (2), 7 (3), 4 (4), 8 (7)
+3 -> 5 digit intersect 1 == 1
+9 -> 6 digit intersect 4 == 4
+0 -> (6 digit - 9) intersect 1 == 1
+6 -> remaining 6 digit
+5 -> 6 - (5 digit - 3) == len(1)
+2 -> remaining
+
+2: 1
+3: 7
+4: 4
+5: 2, 3, 5
+6: 0, 6, 9
+7: 8
