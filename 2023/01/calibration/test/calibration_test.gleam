@@ -1,12 +1,21 @@
 import gleeunit
+import calibration
 import gleeunit/should
 
 pub fn main() {
   gleeunit.main()
 }
 
-// gleeunit test functions end in `_test`
-pub fn hello_world_test() {
-  1
-  |> should.equal(1)
+pub fn parse_test() {
+  calibration.parse("eightwothree")
+  |> should.equal(83)
+
+  calibration.parse("hczsqfour3nxm5seven4")
+  |> should.equal(44)
+
+  calibration.parse("two1nine\neightwothree")
+  |> should.equal(23)
+
+  calibration.parse("3twone")
+  |> should.equal(31)
 }
