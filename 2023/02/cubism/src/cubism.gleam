@@ -50,11 +50,14 @@ pub fn maximum(picks: List(#(Int, Int, Int))) {
 pub fn main() {
   let assert Ok(contents) = simplifile.read("input")
 
+  let games =
+    contents
+    |> string.trim
+    |> string.split("\n")
+    |> list.map(parse)
+
   // Part one
-  contents
-  |> string.trim
-  |> string.split("\n")
-  |> list.map(parse)
+  games
   |> list.filter_map(fn(game) {
     let #(id, picks) = game
     let max = maximum(picks)
@@ -63,6 +66,16 @@ pub fn main() {
       True -> Ok(id)
       False -> Error(0)
     }
+  })
+  |> list.reduce(fn(acc, x) { acc + x })
+  |> io.debug
+
+  // Part two
+  games
+  |> list.map(fn(game) {
+    let #(id, picks) = game
+    let max = maximum(picks)
+    max.0 * max.1 * max.2
   })
   |> list.reduce(fn(acc, x) { acc + x })
   |> io.debug
