@@ -1,5 +1,6 @@
 import gleeunit
 import gleeunit/should
+import gleam/regex
 import parts
 
 pub fn main() {
@@ -7,9 +8,14 @@ pub fn main() {
 }
 
 pub fn symbols_test() {
+  let assert Ok(symre) = regex.from_string("[^0-9.]")
   let contents = "012..?678\n*123..6!."
-  parts.symbols(contents)
+  parts.symbols(contents, symre)
   |> should.equal([#(0, 5), #(1, 0), #(1, 7)])
+
+  let assert Ok(gearre) = regex.from_string("\\*")
+  parts.symbols(contents, gearre)
+  |> should.equal([#(1, 0)])
 }
 
 pub fn index_of_test() {
@@ -32,4 +38,15 @@ pub fn one_test() {
 
   parts.one(numbers, symbols)
   |> should.equal(467 + 35)
+}
+
+pub fn two_test() {
+  // 100...200.
+  // ..*......*
+  // ...300..?!
+  let numbers = [#(100, 0, 0), #(200, 0, 6), #(300, 2, 3)]
+  let gears = [#(1, 2), #(1, 9)]
+
+  parts.two(numbers, gears)
+  |> should.equal(100 * 300)
 }

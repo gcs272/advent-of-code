@@ -6,14 +6,12 @@ import gleam/regex
 import gleam/int
 import simplifile
 
-pub fn symbols(content: String) {
-  let assert Ok(symre) = regex.from_string("[^0-9.]")
-
+pub fn symbols(content: String, re: regex.Regex) {
   string.split(content, "\n")
   |> list.index_map(fn(y, line) {
     string.to_graphemes(line)
     |> list.index_map(fn(x, c) {
-      case regex.check(symre, c) {
+      case regex.check(re, c) {
         True -> Ok(#(y, x))
         False -> Error(#(y, x))
       }
@@ -69,9 +67,35 @@ pub fn one(numbers: List(#(Int, Int, Int)), symbols: List(#(Int, Int))) {
   |> list.fold(0, fn(acc, x) { acc + x })
 }
 
+pub fn two(numbers: List(#(Int, Int, Int)), gears: List(#(Int, Int))) {
+  gears
+  |> list.filter_map(fn(g) {
+    let touching =
+      list.filter(
+        numbers,
+        fn(n) {
+          let y = #(n.1 - 1, n.1 + 1)
+          let x = #(n.2 - 1, n.2 + string.length(int.to_string(n.0)))
+          y.0 <= g.0 && g.0 <= y.1 && x.0 <= g.1 && g.1 <= x.1
+        },
+      )
+
+    case touching {
+      [x, y] -> Ok(x.0 * y.0)
+      _ -> Error(0)
+    }
+  })
+  |> list.fold(0, fn(acc, x) { acc + x })
+}
+
 pub fn main() {
   let assert Ok(contents) = simplifile.read("input")
 
-  one(numbers(contents), symbols(contents))
+  let assert Ok(symre) = regex.from_string("[^0-9.]")
+  one(numbers(contents), symbols(contents, symre))
+  |> io.debug
+
+  let assert Ok(gearre) = regex.from_string("\\*")
+  two(numbers(contents), symbols(contents, gearre))
   |> io.debug
 }
